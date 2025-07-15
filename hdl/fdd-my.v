@@ -636,10 +636,12 @@ always @(posedge wb_clk_i)
                dma_req <= 1'b1;  // поднимаем запрос на доступ к шине
             end
             // чтение еще не запущено
-            else begin 
-               sdcard_addr <= sdaddr;
-               sdspi_start <= 1'b1;         // запускаем SDSPI на чтение
-               sdspi_write_mode <= 1'b0;
+            else begin
+               if (sdcard_idle == 1'b1) begin
+                  sdcard_addr <= sdaddr;
+                  sdspi_start <= 1'b1;         // запускаем SDSPI на чтение
+                  sdspi_write_mode <= 1'b0;
+               end
             end   
          end
          
@@ -755,11 +757,16 @@ always @(posedge wb_clk_i)
             wordcount <= wordcount - 1'b1;    // счетчик слов --
             if ((&sdbuf_addr == 1'b1) || (wordcount == 16'o1)) begin
                // буфер заполнен до конца
-               sdbuf_we <= 1'b0;         // снимаем разрешение записи в буфер sdspi
-               dma_req <= 1'b0;            // освобождаем общую шину
-               sdspi_start <= 1'b1;      // запускаем SDSPI на запись
-               sdspi_write_mode <= 1'b1;
-               dma_state <= DMA_BUF2SD;
+               if (sdcard_idle == 1'b1 & sdspi_io_done == 1'b0 & sdspi_start == 1'b0) begin
+                  sdbuf_we <= 1'b0;         // снимаем разрешение записи в буфер sdspi
+                  dma_req <= 1'b0;            // освобождаем общую шину
+                  sdspi_start <= 1'b1;      // запускаем SDSPI на запись
+                  sdspi_write_mode <= 1'b1;
+                  dma_state <= DMA_BUF2SD;
+               end else begin
+                 // SD card not ready — try again next cycle
+                  dma_state <= DMA_HOST2BUF_NEXT;
+               end
             end   
             // буфер не заполнен - продолжаем передачу данных
             else begin

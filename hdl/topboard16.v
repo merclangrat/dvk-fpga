@@ -1046,7 +1046,7 @@ assign my_dma_ack = (my_dma_state == 1'b1) ? global_ack: 1'b0;
 
 // Страница ввода-выводв
 assign uart1_stb  = wb_stb & (wb_adr[15:3] == (16'o177560 >> 3));   // ИРПС консольный (TT) - 177560-177566 
-assign uart2_stb  = wb_stb & (wb_adr[15:3] == (16'o176500 >> 3));   // ИРПС дополнительный - 176500-177506
+assign uart2_stb  = wb_stb & (wb_adr[15:3] == (16'o176570 >> 3));   // ИРПС дополнительный - 176570-176576
 assign lpt_stb    = wb_stb & (wb_adr[15:2] == (16'o177514 >> 2));   // ИРПР (LP) - 177514-177516
 assign rk11_stb   = wb_stb & (wb_adr[15:4] == (16'o177400 >> 4));   // RK - 177400-177416
 assign rk611_stb  = wb_stb & (wb_adr[15:5] == (16'o177440 >> 5));   // DM - 177440-177476

@@ -126,7 +126,7 @@ reg [4:0] cpudelay;
 reg cpu_clk_enable;
 
 always @ (posedge clk_p) begin
-    if (cpudelay != 5'd21) begin
+    if (cpudelay != 5'd1) begin
         cpudelay <= cpudelay + 1'b1;  // считаем от 0 до 22
         cpu_clk_enable <= 1'b0;
     end     
@@ -144,7 +144,7 @@ f11_wb  #(.F11_CORE_FPP(`fpu_present)) cpu (
    .vm_clk_p(clk_p),        // прямой тактовый сигнал
    .vm_clk_n(clk_n),        // инверсный тактовый сигнал
    .vm_clk_ena(cpu_clk_enable),  // сигнал разрешения работы в данном такте
-   .vm_clk_slow(1'b0),      // включение режима замедления  
+   .vm_clk_slow(1'b1),      // включение режима замедления  
 
    // сбросы и прерывания   
    .vm_init(bus_reset),     // выход сигнала сброса устройств на шине
@@ -428,10 +428,13 @@ always @(posedge clk_p)
     if (bus_reset == 1'b1) lks_ack <= 1'b0;
     else lks_ack <= lks_reply;
 
-// сигнал прерывания от таймера   
+// сигнал прерывания от таймера
+`ifdef LTC
 assign bevent = timer_50 & timer_ie;
+`else
+assign bevent = timer_50;
+`endif
 
-    
 //*******************************************************************
 //*  Формирователь сигналов выбора устройств на шине
 //*******************************************************************

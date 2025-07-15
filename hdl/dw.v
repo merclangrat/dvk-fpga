@@ -399,7 +399,7 @@ always @(posedge wb_clk_i)
                                  // запуск записи
                                  w_start: begin
                                        sdreq <= 1'b1;   // запрос доступа к карте
-                                       if (sdack & (sdcard_idle == 1)) begin
+                                       if (sdack & (sdcard_idle == 1'b1)) begin
                                           sdspi_write_mode <= 1'b1 ;  // режим записи
                                           sdspi_start <= 1'b1;        // запускаем sdspi
                                           busy <= 1'b1;               // снимаем бит готовности контроллера
