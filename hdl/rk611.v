@@ -628,7 +628,7 @@ always @(posedge wb_clk_i)  begin
                            // подтверждение доступа к карте получено
                            if (sdack & (sdcard_idle == 1'b1)) begin
                            // запись еще не запущена, SD-карта готова к  работе
-                              if (sdcard_idle == 1'b1 & write_start == 1'b0) begin
+                              if (sdcard_idle == 1'b1 & sdspi_start == 1'b0 & sdspi_io_done == 1'b0 & write_start == 1'b0) begin
                                  
                                  // проверка параметров CHS
                                  if (bad_chs)  begin
@@ -704,7 +704,7 @@ always @(posedge wb_clk_i)  begin
                            if (sdack & sdcard_idle == 1'b1) begin   // разрешение на доступ к карте получено
                               //-------------------------------------------------------------------  
                               // если SD-модуль свободен, чтение еще не запущено и не завершено
-                              if (iocomplete == 1'b0 & read_start == 1'b0) begin
+                              if (iocomplete == 1'b0 & read_start == 1'b0 & sdspi_start == 1'b0 & sdspi_io_done == 1'b0) begin
                                  // проверка параметров CHS
                                  if (bad_chs) begin
                                         rker_idae <= 1'b1 ; 
@@ -825,7 +825,7 @@ always @(posedge wb_clk_i)  begin
                         nxm <= 1'b0 ; //  снимаем флаг ошибки nxm
                         dma_we_o <= 1'b0;
                         // старт процедуры записи
-                        if (write_start == 1'b1 & sdcard_idle == 1'b1) begin
+                        if (write_start == 1'b1 & sdcard_idle == 1'b1 & sdspi_start == 1'b0 & sdspi_io_done == 1'b0) begin
                             sdcard_addr <= sdaddr;                   // получаем адрес SD-сектора                
                             dma_req <= 1'b1 ;                        // поднимаем запрос DMA
                             if (dma_gnt == 1'b1) begin               // ждем подтверждения DMA
@@ -845,7 +845,7 @@ always @(posedge wb_clk_i)  begin
                             end 
                         end
                         // старт процедуры чтения
-                        else if (read_start == 1'b1 & sdcard_idle == 1'b1) begin
+                        else if (read_start == 1'b1 & sdcard_idle == 1'b1 & sdspi_start == 1'b0 & sdspi_io_done == 1'b0) begin
                                 sdcard_addr <= sdaddr;                       // получаем адрес SD-сектора   
                                 DMA_state <= DMA_readsector;                 // переходим к чтению данных
                                 // коррекция счетчика читаемых слов
