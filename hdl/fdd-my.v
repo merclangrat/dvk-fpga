@@ -637,7 +637,7 @@ always @(posedge wb_clk_i)
             end
             // чтение еще не запущено
             else begin
-               if (sdcard_idle == 1'b1) begin
+               if (sdcard_idle == 1'b1 && sdspi_start == 1'b0 && sdspi_io_done == 1'b0) begin
                   sdcard_addr <= sdaddr;
                   sdspi_start <= 1'b1;         // запускаем SDSPI на чтение
                   sdspi_write_mode <= 1'b0;
