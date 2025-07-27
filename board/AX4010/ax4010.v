@@ -86,9 +86,9 @@ assign led[3]=timer_led;     // индикация включения тайме
 //assign led[2]=led2;    // Индикатор состояния процессора 2
 //assign led[3]=timer_led;  // индикация включения таймера
 
-assign led[0]=dm_led & dx_led;  // запрос обмена диска 
+assign led[0]=dm_led;  // запрос обмена диска 
 assign led[1]=my_led;    // Индикатор состояния процессора 1
-assign led[2]=led1 | led2;    // Индикатор состояния процессора 2
+assign led[2]=dx_led;    // Индикатор состояния процессора 2
 assign led[3]=dw_led;        // запрос обмена диска DW
 
 `endif
